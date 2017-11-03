@@ -8,8 +8,6 @@ package com.strangeone101.calculatorproject.components;
 import com.strangeone101.calculatorproject.CalculatorFrame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import javax.swing.JButton;
 
 /**
@@ -17,28 +15,16 @@ import javax.swing.JButton;
  * @author 92018134
  */
 public class NumberButton extends JButton {
-
-    public NumberButton(final CalculatorFrame frame) {
+    
+    public NumberButton(final CalculatorFrame frame, final String number) {
         final NumberButton instance = this;
-        this.addMouseListener(new MouseListener() {
-
+        this.addActionListener(new ActionListener() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                frame.getTxtCalculation().setText(frame.getTxtCalculation().getText() + instance.getText());
-                frame.update();
+            public void actionPerformed(ActionEvent e) {
+                if (frame.getTxtCalculation().getText().equals("0")) frame.getTxtCalculation().setText("");
+                frame.getTxtCalculation().setText(frame.getTxtCalculation().getText() + number);
+                //frame.update();
             }
-
-            @Override
-            public void mousePressed(MouseEvent e) {}
-
-            @Override
-            public void mouseReleased(MouseEvent e) {}
-
-            @Override
-            public void mouseEntered(MouseEvent e) {}
-
-            @Override
-            public void mouseExited(MouseEvent e) {} 
         });
     }
     

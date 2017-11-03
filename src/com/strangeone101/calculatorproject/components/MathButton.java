@@ -7,8 +7,8 @@ package com.strangeone101.calculatorproject.components;
 
 import com.strangeone101.calculatorproject.CalculatorFrame;
 import com.strangeone101.calculatorproject.EnumMathModifier;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JButton;
 
 /**
@@ -19,10 +19,10 @@ public class MathButton extends JButton {
 
     public MathButton(final EnumMathModifier modifier, final CalculatorFrame frame) {
         final MathButton instance = this;
-        this.addMouseListener(new MouseListener() {
+        this.addActionListener(new ActionListener() {
 
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void actionPerformed(ActionEvent e) {
                 String text = frame.getTxtCalculation().getText();
                 int index = text.length() - 1;
                 if (index >= 0 && text.charAt(index) == ' ') index--;
@@ -32,20 +32,8 @@ public class MathButton extends JButton {
                    text = text + " " + instance.getText() + " ";
                 }
                 frame.getTxtCalculation().setText(text);
-                frame.update();
+                //frame.update();
             }
-
-            @Override
-            public void mousePressed(MouseEvent e) {}
-
-            @Override
-            public void mouseReleased(MouseEvent e) {}
-
-            @Override
-            public void mouseEntered(MouseEvent e) {}
-
-            @Override
-            public void mouseExited(MouseEvent e) {} 
         });
     }
     

@@ -25,7 +25,7 @@ public class CalculatorProject {
         //System.out.println("Finding left of + char: \"" + CalculatorFrame.findDoubleLeft(s, s.indexOf("+")));
        // System.out.println("Finding right of + char: \"" + CalculatorFrame.findDoubleRight(s, s.indexOf("+")));
         long time1 = System.currentTimeMillis();
-        double d = CalculatorFrame.calculate(s);
+        double d = CalculatorUtil.calculate(s);
         long time2 = System.currentTimeMillis();
         System.out.println("Calculation of string: " + d);
         System.out.println("Calculation took " + (time2 - time1) + "ms");

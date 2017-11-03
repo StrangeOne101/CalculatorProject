@@ -8,9 +8,13 @@ package com.strangeone101.calculatorproject;
 import com.strangeone101.calculatorproject.components.MathButton;
 import com.strangeone101.calculatorproject.components.NumberButton;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Font;
+import javax.swing.JEditorPane;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
 /**
  *
@@ -18,20 +22,11 @@ import javax.swing.JTextField;
  */
 public class CalculatorFrame extends javax.swing.JFrame {
     private int decimalPlaces = 2;
+    private boolean calculated = true; //Did the last calculation work?
+    private JEditorPane pane;
     
     public static final char SUBTRACTION = '\u2012';// \u2012 is the other '-' symbol. 
     public static final String CALC_CHARS = "+*/%^" + SUBTRACTION; 
-    
-    //These statics will be used to calculate math functions.
-    //They are characters because our calculation method relies
-    //on characters and string manipulation, and using things
-    //like 'sin' would break that as it's 3 characters
-    public static final char SIN = 's'; 
-    public static final char ASIN = 'S';
-    public static final char COS = 'c';
-    public static final char ACOS = 'C';
-    public static final char TAN = 't';
-    public static final char ATAN = 'T';
 
     /**
      * Creates new form CalculatorFrame
@@ -39,6 +34,44 @@ public class CalculatorFrame extends javax.swing.JFrame {
     public CalculatorFrame() {
         initComponents();
         lblCalcTime.setText("");
+        
+        /**
+         * The following code is for the "About" window. I'm doing it this way so I can have an HMTL link that functions
+         */
+        
+        Font font = this.getFont();
+        StringBuffer style = new StringBuffer("font-family:" + font.getFamily() + ";");
+        
+        style.append("font-weight: bold;");
+        style.append("font-size:" + font.getSize() + "pt;");
+        
+        pane = new JEditorPane("text/html", "<HTML><BODY STYLE='" + style + "'>This calculator was designed by Toby Strange,<br>October 2017 at Computer Power Plus<br><br>"
+                + "All the code can be found online at<br><a href='http://github.com/StrangeOne101/CalculatorProject'>"
+                + "http://github.com/StrangeOne101/CalculatorProject</a></BODY></HTML>");
+        
+        pane.setBackground(this.getBackground());
+
+        // handle link events
+        pane.addHyperlinkListener(new HyperlinkListener()
+        {
+            @Override
+            public void hyperlinkUpdate(HyperlinkEvent e)
+            {
+                if (!e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) return;
+                
+                Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+                if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+                    try {
+                        desktop.browse(e.getURL().toURI());
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                }         
+            }
+        });
+        
+        pane.setEditable(false);
+        this.add(pane);
     }
 
     /**
@@ -57,17 +90,17 @@ public class CalculatorFrame extends javax.swing.JFrame {
         btnGroupTrigUnit = new javax.swing.ButtonGroup();
         txtCalculation = new javax.swing.JTextField();
         btnCalculate = new javax.swing.JButton();
-        btn_2 = new NumberButton(this);
-        btn_3 = new NumberButton(this);
-        btn_4 = new NumberButton(this);
-        btn_5 = new NumberButton(this);
-        btn_6 = new NumberButton(this);
-        btn_7 = new NumberButton(this);
-        btn_8 = new NumberButton(this);
-        btn_9 = new NumberButton(this);
+        btn_2 = new NumberButton(this, "2");
+        btn_3 = new NumberButton(this, "3");
+        btn_4 = new NumberButton(this, "4");
+        btn_5 = new NumberButton(this, "5");
+        btn_6 = new NumberButton(this, "6");
+        btn_7 = new NumberButton(this, "7");
+        btn_8 = new NumberButton(this, "8");
+        btn_9 = new NumberButton(this, "9");
         btn_decimal = new javax.swing.JButton();
-        btn_0 = new NumberButton(this);
-        btn_1 = new NumberButton(this);
+        btn_0 = new NumberButton(this, "0");
+        btn_1 = new NumberButton(this, "1");
         btn_multiply = new MathButton(EnumMathModifier.MULTIPLICATION, this);
         btn_divide = new MathButton(EnumMathModifier.DIVISION, this);
         btn_add = new MathButton(EnumMathModifier.ADDITION, this);
@@ -79,8 +112,8 @@ public class CalculatorFrame extends javax.swing.JFrame {
         btn_RBracket = new javax.swing.JButton();
         btn_LBracket = new javax.swing.JButton();
         btn_CE = new javax.swing.JButton();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
+        radioDegrees = new javax.swing.JRadioButton();
+        radioRadians = new javax.swing.JRadioButton();
         btn_blank2 = new javax.swing.JButton();
         btn_sin = new javax.swing.JButton();
         btn_cos = new javax.swing.JButton();
@@ -88,11 +121,11 @@ public class CalculatorFrame extends javax.swing.JFrame {
         btn_acos = new javax.swing.JButton();
         btn_tan = new javax.swing.JButton();
         btn_atan = new javax.swing.JButton();
-        btn_pi = new javax.swing.JButton();
-        btn_e = new javax.swing.JButton();
+        btn_pi = new NumberButton(this, Math.PI + "");
+        btn_e = new NumberButton(this, Math.E + "");
         btn_factorial = new javax.swing.JButton();
         btn_divBy1 = new javax.swing.JButton();
-        btn_blank1 = new javax.swing.JButton();
+        btn_invert = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu2 = new javax.swing.JMenu();
         radioBtn_View_Baisc = new javax.swing.JRadioButtonMenuItem();
@@ -106,8 +139,8 @@ public class CalculatorFrame extends javax.swing.JFrame {
         menuItemRound_enabled = new javax.swing.JCheckBoxMenuItem();
         menuItemRound_config = new javax.swing.JMenuItem();
         jMenu5 = new javax.swing.JMenu();
-        jMenuItem2 = new javax.swing.JMenuItem();
-        jMenuItem3 = new javax.swing.JMenuItem();
+        menuItemAbout = new javax.swing.JMenuItem();
+        menuItemHotKeys = new javax.swing.JMenuItem();
 
         jMenu1.setText("jMenu1");
 
@@ -283,16 +316,16 @@ public class CalculatorFrame extends javax.swing.JFrame {
         getContentPane().add(btn_CE);
         btn_CE.setBounds(120, 270, 90, 40);
 
-        btnGroupTrigUnit.add(jRadioButton1);
-        jRadioButton1.setSelected(true);
-        jRadioButton1.setText("Degrees");
-        getContentPane().add(jRadioButton1);
-        jRadioButton1.setBounds(290, 20, 80, 23);
+        btnGroupTrigUnit.add(radioDegrees);
+        radioDegrees.setSelected(true);
+        radioDegrees.setText("Degrees");
+        getContentPane().add(radioDegrees);
+        radioDegrees.setBounds(290, 20, 80, 23);
 
-        btnGroupTrigUnit.add(jRadioButton2);
-        jRadioButton2.setText("Radians");
-        getContentPane().add(jRadioButton2);
-        jRadioButton2.setBounds(370, 20, 90, 23);
+        btnGroupTrigUnit.add(radioRadians);
+        radioRadians.setText("Radians");
+        getContentPane().add(radioRadians);
+        radioRadians.setBounds(370, 20, 90, 23);
 
         btn_blank2.setEnabled(false);
         btn_blank2.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -303,36 +336,66 @@ public class CalculatorFrame extends javax.swing.JFrame {
         btn_sin.setText("sin");
         btn_sin.setMargin(new java.awt.Insets(2, 2, 2, 2));
         btn_sin.setPreferredSize(new java.awt.Dimension(40, 40));
+        btn_sin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_sinActionPerformed(evt);
+            }
+        });
         getContentPane().add(btn_sin);
         btn_sin.setBounds(310, 70, 42, 42);
 
         btn_cos.setText("cos");
         btn_cos.setMargin(new java.awt.Insets(2, 2, 2, 2));
         btn_cos.setPreferredSize(new java.awt.Dimension(40, 40));
+        btn_cos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_cosActionPerformed(evt);
+            }
+        });
         getContentPane().add(btn_cos);
         btn_cos.setBounds(360, 70, 42, 42);
 
         btn_asin.setText("asin");
         btn_asin.setMargin(new java.awt.Insets(2, 2, 2, 2));
         btn_asin.setPreferredSize(new java.awt.Dimension(40, 40));
+        btn_asin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_asinActionPerformed(evt);
+            }
+        });
         getContentPane().add(btn_asin);
         btn_asin.setBounds(310, 120, 42, 42);
 
         btn_acos.setText("acos");
         btn_acos.setMargin(new java.awt.Insets(2, 2, 2, 2));
         btn_acos.setPreferredSize(new java.awt.Dimension(40, 40));
+        btn_acos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_acosActionPerformed(evt);
+            }
+        });
         getContentPane().add(btn_acos);
         btn_acos.setBounds(360, 120, 42, 42);
 
         btn_tan.setText("tan");
         btn_tan.setMargin(new java.awt.Insets(2, 2, 2, 2));
         btn_tan.setPreferredSize(new java.awt.Dimension(40, 40));
+        btn_tan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_tanActionPerformed(evt);
+            }
+        });
         getContentPane().add(btn_tan);
         btn_tan.setBounds(410, 70, 42, 42);
 
         btn_atan.setText("atan");
         btn_atan.setMargin(new java.awt.Insets(2, 2, 2, 2));
         btn_atan.setPreferredSize(new java.awt.Dimension(40, 40));
+        btn_atan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_atanActionPerformed(evt);
+            }
+        });
         getContentPane().add(btn_atan);
         btn_atan.setBounds(410, 120, 42, 42);
 
@@ -351,20 +414,35 @@ public class CalculatorFrame extends javax.swing.JFrame {
         btn_factorial.setText("x!");
         btn_factorial.setMargin(new java.awt.Insets(2, 2, 2, 2));
         btn_factorial.setPreferredSize(new java.awt.Dimension(40, 40));
+        btn_factorial.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_factorialActionPerformed(evt);
+            }
+        });
         getContentPane().add(btn_factorial);
         btn_factorial.setBounds(310, 170, 42, 42);
 
         btn_divBy1.setText("1/x");
         btn_divBy1.setMargin(new java.awt.Insets(2, 2, 2, 2));
         btn_divBy1.setPreferredSize(new java.awt.Dimension(40, 40));
+        btn_divBy1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_divBy1ActionPerformed(evt);
+            }
+        });
         getContentPane().add(btn_divBy1);
         btn_divBy1.setBounds(360, 170, 42, 42);
 
-        btn_blank1.setEnabled(false);
-        btn_blank1.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        btn_blank1.setPreferredSize(new java.awt.Dimension(40, 40));
-        getContentPane().add(btn_blank1);
-        btn_blank1.setBounds(410, 170, 42, 42);
+        btn_invert.setText("-/+");
+        btn_invert.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        btn_invert.setPreferredSize(new java.awt.Dimension(40, 40));
+        btn_invert.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_invertActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btn_invert);
+        btn_invert.setBounds(410, 170, 42, 42);
 
         jMenu2.setText("View");
 
@@ -439,7 +517,7 @@ public class CalculatorFrame extends javax.swing.JFrame {
         jMenu4.add(menuItemRound_enabled);
 
         menuItemRound_config.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
-        menuItemRound_config.setText("2 dpt...");
+        menuItemRound_config.setText("2 dpt (click to change)");
         menuItemRound_config.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuItemRound_configActionPerformed(evt);
@@ -451,13 +529,23 @@ public class CalculatorFrame extends javax.swing.JFrame {
 
         jMenu5.setText("Help");
 
-        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, 0));
-        jMenuItem2.setText("About");
-        jMenu5.add(jMenuItem2);
+        menuItemAbout.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, 0));
+        menuItemAbout.setText("About");
+        menuItemAbout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemAboutActionPerformed(evt);
+            }
+        });
+        jMenu5.add(menuItemAbout);
 
-        jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_K, 0));
-        jMenuItem3.setText("Hot Keys");
-        jMenu5.add(jMenuItem3);
+        menuItemHotKeys.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_K, 0));
+        menuItemHotKeys.setText("Hot Keys");
+        menuItemHotKeys.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemHotKeysActionPerformed(evt);
+            }
+        });
+        jMenu5.add(menuItemHotKeys);
 
         jMenuBar1.add(jMenu5);
 
@@ -468,9 +556,10 @@ public class CalculatorFrame extends javax.swing.JFrame {
 
     private void btnCalculateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCalculateActionPerformed
         try {
+            calculated = false; //Set the calculated field back to false
             long time = System.nanoTime();
-            double d = calculate(getTxtCalculation().getText().replaceAll(" ", ""));
-            double rounded = Math.round(d * (Math.pow(10, this.decimalPlaces))) / Math.pow(10, this.decimalPlaces);
+            double d = CalculatorUtil.calculate(getTxtCalculation().getText().replaceAll(" ", ""));
+            double rounded = menuItemRound_enabled.isSelected() ? Math.round(d * (Math.pow(10, this.decimalPlaces))) / Math.pow(10, this.decimalPlaces) : d;
             long time2 = System.nanoTime();
             double totalTime = (time2 - time);
             totalTime /= 1000000;
@@ -478,24 +567,24 @@ public class CalculatorFrame extends javax.swing.JFrame {
             if (chkboxEquationTime.isSelected()) {
                 lblCalcTime.setText(totalTime + "ms");
             }
+            calculated = true; //If the calculation was successful, this will be set back to true. 
             update();
         } catch (ArithmeticException e) {
             JOptionPane.showMessageDialog(this, e.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (NumberFormatException e) {
             if (e.getLocalizedMessage().startsWith("For input string:")) {
                 JOptionPane.showMessageDialog(this, "Inputted number is too large! (Max is " + Double.MAX_VALUE + ")", "Error", JOptionPane.ERROR_MESSAGE);     
+            } else if (e.getLocalizedMessage().startsWith("multiple points")) {
+                JOptionPane.showMessageDialog(this, "Cannot have multiple decimal points!", "Error", JOptionPane.ERROR_MESSAGE); 
+            } else if (e.getLocalizedMessage().equalsIgnoreCase("empty string")) {
+                JOptionPane.showMessageDialog(this, "Incomplete equation!", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this, e.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
             e.printStackTrace();
         } catch (Exception e) {
-            if (e.getLocalizedMessage().equalsIgnoreCase("empty string")) {
-                JOptionPane.showMessageDialog(this, "Incomplete equation!", "Error", JOptionPane.ERROR_MESSAGE);
-            } else {
-                e.printStackTrace();
-            JOptionPane.showMessageDialog(this, e.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
-            
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, e.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);    
         }
         
     }//GEN-LAST:event_btnCalculateActionPerformed
@@ -530,8 +619,7 @@ public class CalculatorFrame extends javax.swing.JFrame {
         if (text.length() > 0) {
             int indexToCheck = text.length() -1;
             if (indexToCheck > 0 && text.charAt(indexToCheck) == ' ') indexToCheck--;
-            if (indexToCheck > 0 && (CALC_CHARS + "()").contains(text.charAt(indexToCheck) + "")) indexToCheck--;
-            if (indexToCheck > 0 && text.charAt(indexToCheck) == ' ') indexToCheck--;
+            if (indexToCheck > 1 && (CALC_CHARS + "()").contains(text.charAt(indexToCheck) + "") && text.charAt(indexToCheck - 1) == ' ') indexToCheck--;
             if (indexToCheck <= 0) {
                 txtCalculation.setText("0");
             } else {
@@ -552,12 +640,11 @@ public class CalculatorFrame extends javax.swing.JFrame {
     private void btn_LBracketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_LBracketActionPerformed
         String text = txtCalculation.getText();
         int index = text.length() - 1;
-        if (index > 0 && text.charAt(index) == ' ') index--;
-        /*if (index > 0 && CalculatorFrame.CALC_CHARS.contains(text.charAt(index) + "")) {
-            text = text.substring(0, index) + "( ";
-        } else {*/
+        if (index > 0 && text.charAt(index) == ' ') {
+            text = text + "(";
+        } else {
             text = text + " (";
-        //}
+        }
         txtCalculation.setText(text);
         update();
     }//GEN-LAST:event_btn_LBracketActionPerformed
@@ -597,13 +684,13 @@ public class CalculatorFrame extends javax.swing.JFrame {
         char lastChar = text.charAt(index);
         if (lastChar == '.' || (CALC_CHARS + "()").contains(lastChar + "")) {
             return;
-        } else if (text.substring(findDoubleLeft(text, index) ,index).contains(".")) return;
+        } else if (text.substring(CalculatorUtil.findDoubleLeft(text, index) ,index).contains(".")) return;
         
         txtCalculation.setText(text + ".");
     }//GEN-LAST:event_btn_decimalActionPerformed
 
     private void btn_CEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CEActionPerformed
-        int index = findDoubleLeft(txtCalculation.getText(), txtCalculation.getText().length());
+        int index = CalculatorUtil.findDoubleLeft(txtCalculation.getText(), txtCalculation.getText().length());
         if (index != txtCalculation.getText().length()) {
             String text = txtCalculation.getText().substring(0, index);
             if (text.equals("")) {
@@ -624,171 +711,146 @@ public class CalculatorFrame extends javax.swing.JFrame {
         this.setSize(475, this.getSize().height);
     }//GEN-LAST:event_radioBtn_View_ExtendedActionPerformed
 
+    private void btn_factorialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_factorialActionPerformed
+        btnCalculateActionPerformed(evt);
+        if (calculated) {
+            if (txtCalculation.getText().contains(".") || Integer.parseInt(txtCalculation.getText()) > 20 || Integer.parseInt(txtCalculation.getText()) < 0) {
+                JOptionPane.showMessageDialog(this, "Please provide a positive integer between 0 and 20!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            int value = Integer.parseInt(txtCalculation.getText());
+            int total = 1;
+            for (int i = 1; i <= value; ++i) {
+                total *= i;
+            }
+            txtCalculation.setText(total + "");
+        }
+    }//GEN-LAST:event_btn_factorialActionPerformed
+
+    private void btn_divBy1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_divBy1ActionPerformed
+        btnCalculateActionPerformed(evt);
+        if (calculated) {
+            double value = Double.parseDouble(txtCalculation.getText());
+            if (value == 0) {
+                JOptionPane.showMessageDialog(this, "Cannot divide by zero!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            txtCalculation.setText(1 / value + "");
+            btnCalculateActionPerformed(evt);
+        }
+    }//GEN-LAST:event_btn_divBy1ActionPerformed
+
+    private void btn_sinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sinActionPerformed
+        btnCalculateActionPerformed(evt);
+        if (calculated) {
+            double angle = Double.parseDouble(txtCalculation.getText());
+            if (radioDegrees.isSelected()) {
+                angle = Math.toRadians(angle);
+            }
+            txtCalculation.setText(Math.sin(angle) + "");
+            btnCalculateActionPerformed(evt);
+        }
+    }//GEN-LAST:event_btn_sinActionPerformed
+
+    private void btn_cosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cosActionPerformed
+        btnCalculateActionPerformed(evt);
+        if (calculated) {
+            double angle = Double.parseDouble(txtCalculation.getText());
+            if (radioDegrees.isSelected()) {
+                angle = Math.toRadians(angle);
+            }
+            txtCalculation.setText(Math.cos(angle) + "");
+            btnCalculateActionPerformed(evt);
+        }
+    }//GEN-LAST:event_btn_cosActionPerformed
+
+    private void btn_tanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_tanActionPerformed
+        btnCalculateActionPerformed(evt);
+        if (calculated) {
+            double angle = Double.parseDouble(txtCalculation.getText());
+            if (radioDegrees.isSelected()) {
+                angle = Math.toRadians(angle);
+            }
+            txtCalculation.setText(Math.tan(angle) + "");
+            btnCalculateActionPerformed(evt);
+        }
+    }//GEN-LAST:event_btn_tanActionPerformed
+
+    private void btn_asinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_asinActionPerformed
+        btnCalculateActionPerformed(evt);
+        if (calculated) {
+            double input = Double.parseDouble(txtCalculation.getText());
+            double output = Math.asin(input);
+            if (radioDegrees.isSelected()) {
+                output = Math.toDegrees(output);
+            }
+            txtCalculation.setText(output + "");
+            btnCalculateActionPerformed(evt);
+        }
+    }//GEN-LAST:event_btn_asinActionPerformed
+
+    private void btn_acosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_acosActionPerformed
+        btnCalculateActionPerformed(evt);
+        if (calculated) {
+            double input = Double.parseDouble(txtCalculation.getText());
+            double output = Math.acos(input);
+            if (radioDegrees.isSelected()) {
+                output = Math.toDegrees(output);
+            }
+            txtCalculation.setText(output + "");
+            btnCalculateActionPerformed(evt);
+        }
+    }//GEN-LAST:event_btn_acosActionPerformed
+
+    private void btn_atanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_atanActionPerformed
+        btnCalculateActionPerformed(evt);
+        if (calculated) {
+            double input = Double.parseDouble(txtCalculation.getText());
+            double output = Math.atan(input);
+            if (radioDegrees.isSelected()) {
+                output = Math.toDegrees(output);
+            }
+            txtCalculation.setText(output + "");
+            btnCalculateActionPerformed(evt);
+        }
+    }//GEN-LAST:event_btn_atanActionPerformed
+
+    private void btn_invertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_invertActionPerformed
+        int index = CalculatorUtil.findDoubleLeft(txtCalculation.getText(), txtCalculation.getText().length());
+        if (index != -1 && index != txtCalculation.getText().length()) {
+            double d = Double.parseDouble(txtCalculation.getText().substring(index));
+            d *= -1;
+            txtCalculation.setText(CalculatorUtil.replaceBetween(txtCalculation.getText(), index, txtCalculation.getText().length(), d + ""));
+            update();
+        }
+        
+    }//GEN-LAST:event_btn_invertActionPerformed
+
+    private void menuItemAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemAboutActionPerformed
+        JOptionPane.showMessageDialog(this, pane, "About", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_menuItemAboutActionPerformed
+
+    private void menuItemHotKeysActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemHotKeysActionPerformed
+        JOptionPane.showMessageDialog(this, "A - About\nK - Hot Keys\nCtrl + P - Plain Font\nCtrl + B - Bold Font\nB - Basic View\nE - Extended View\nT - Calculation Time", "About", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_menuItemHotKeysActionPerformed
+
 
     public JTextField getTxtCalculation() {
         return txtCalculation;
     }
     
     public void update() {
-        eraseUnneededZeros();
+        txtCalculation.setText(CalculatorUtil.eraseUnneededZeros(txtCalculation.getText()));
         
         
     }
     
-    /**
-     * Removes all 0s from the calculation that don't
-     * need to be there (at the start of the number, e.g.
-     * '003' instead of what should just be '3')
-     */
-    public void eraseUnneededZeros() {
-        String text = txtCalculation.getText();
-        if (text.length() == 1) return; //Don't remove things from just 0
-        while (text.length() > 1 && text.split("\\.")[0].charAt(0) == '0' && (!text.contains(".") || text.split("\\.")[0].length() > 1)) {
-            text = text.substring(1);
-        }
-        
-        //TODO
-        while (text.contains(".") && 
-                (text.split("\\.", 2)[1].length() == 0 || 
-                text.split("\\.", 2)[1].charAt(text.split("\\.")[1].length() - 1) == '0')) {
-            text = text.substring(0, text.length() - 1); 
-        }
-        
-        if (!text.equals(txtCalculation.getText())) {
-            txtCalculation.setText(text);
-        }
-    }
     
     
-    public static double calculate(String s) throws ArithmeticException {
-        String text = s.replaceAll(" ", "").replaceAll("sin", SIN + "").replaceAll("cos", COS + "").replaceAll("tan", TAN + "")
-                .replaceAll("asin", ASIN + "").replaceAll("acos", ACOS + "").replaceAll("atan", ATAN + "");
-        
-        if (text.contains("(") && text.contains(")")) {
-            int left = text.indexOf("(");
-            int right = text.lastIndexOf(")");
-            double inner = calculate(text.substring(left + 1, right));
-            String stringInner = inner + "";
-            if (!text.substring(findDoubleLeft(text, left), left).equals("") && left > 0) { //If there is a non blank string, there is a number before the brackets and not an operator
-                stringInner = "*" + stringInner;
-            }
-            
-            if (!text.substring(right, findDoubleRight(text, right)).equals("")  && right + 1 < text.length()) {
-                stringInner = stringInner + "*";
-            }
-            
-            text = replaceBetween(text, left, right + 1, stringInner);
-        }
-        
-        //TODO Trig methods here
-        
-        /*while (text.contains(SIN + "")) {
-            int index = text.indexOf(SIN);
-            int left = findDoubleLeft(text, index);
-            int right = findDoubleRight(text, index);
-            double leftValue = Double.parseDouble(text.substring(left, index));
-            double rightValue = Double.parseDouble(text.substring(index + 1, right));
-            double outcome = Math.sin(leftValue, rightValue);
-            text = replaceBetween(text, left, right, outcome + "");
-        }*/
-        
-        while (text.contains("^")) {
-            int index = text.indexOf("^");
-            int left = findDoubleLeft(text, index);
-            int right = findDoubleRight(text, index);
-            double leftValue = Double.parseDouble(text.substring(left, index));
-            double rightValue = Double.parseDouble(text.substring(index + 1, right));
-            double outcome = Math.pow(leftValue, rightValue);
-            text = replaceBetween(text, left, right, outcome + "");
-        }
-        
-        while (text.contains("/")) {
-            int index = text.indexOf("/");
-            int left = findDoubleLeft(text, index);
-            int right = findDoubleRight(text, index);
-            double leftValue = Double.parseDouble(text.substring(left, index));
-            double rightValue = Double.parseDouble(text.substring(index + 1, right));
-            if (rightValue == 0) throw new ArithmeticException("Cannot divide by zero!");
-            double outcome = leftValue / rightValue;
-            text = replaceBetween(text, left, right, outcome + "");
-        }
-        
-        while (text.contains("%")) {
-            int index = text.indexOf("%");
-            int left = findDoubleLeft(text, index);
-            int right = findDoubleRight(text, index);
-            double leftValue = Double.parseDouble(text.substring(left, index));
-            double rightValue = Double.parseDouble(text.substring(index + 1, right));
-            double outcome = leftValue % rightValue;
-            text = replaceBetween(text, left, right, outcome + "");
-        }
-        
-        while (text.contains("*")) {
-            int index = text.indexOf("*");
-            int left = findDoubleLeft(text, index);
-            int right = findDoubleRight(text, index);
-            double leftValue = Double.parseDouble(text.substring(left, index));
-            double rightValue = Double.parseDouble(text.substring(index + 1, right));
-            double outcome = leftValue * rightValue;
-            text = replaceBetween(text, left, right, outcome + "");
-        }
-        
-         while (text.contains("+")) {
-            int index = text.indexOf("+");
-            int left = findDoubleLeft(text, index);
-            int right = findDoubleRight(text, index);
-            double leftValue = Double.parseDouble(text.substring(left, index));
-            double rightValue = Double.parseDouble(text.substring(index + 1, right));
-            double outcome = leftValue + rightValue;
-            text = replaceBetween(text, left, right, outcome + "");
-        }
-        
-        while (text.contains("\u2012")) { // - symbol that isn't negatives
-            int index = text.indexOf("\u2012");
-            int left = findDoubleLeft(text, index);
-            int right = findDoubleRight(text, index);
-            double leftValue = left == index ? 0 : Double.parseDouble(text.substring(left, index));
-            double rightValue = Double.parseDouble(text.substring(index + 1, right));
-            double outcome = leftValue - rightValue;
-            text = replaceBetween(text, left, right, outcome + "");
-        }
-        return Double.parseDouble(text); //TODO
-    }
     
-    public static int findDoubleLeft(String text, int index) {       
-        int i;
-        for (i = index - 1; i >= 0; i--) {
-            char c = text.charAt(i);
-            //System.out.println("Char index: " + i + " | Char: " + c);
-            if ("+\u2012*/)(^%".contains(c + "")) break; //If the next character is an operator, that marks the end of the number we are looking for
-        }
-        
-        return i + 1;
-    }
+   
     
-    public static int findDoubleRight(String text, int index) {
-        int i;
-        for (i = index + 1; i < text.length(); i++) {
-            char c = text.charAt(i);
-            
-            if ("+\u2012*/)(^%".contains(c + "")) break; //If the next character is an operator, that marks the end of the number we are looking for
-        }
-        
-        return i;
-    }
     
-    public static String replaceBetween(String original, int point1, int point2, String replacementText) {
-        if (point1 > point2) { //Swap them
-            int p = point1;
-            point1 = point2;
-            point2 = p;
-        }
-        
-        return original.substring(0, point1) + 
-                replacementText + 
-                original.substring(point2, original.length())
-                ;
-    }
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -815,7 +877,6 @@ public class CalculatorFrame extends javax.swing.JFrame {
     private javax.swing.JButton btn_asin;
     private javax.swing.JButton btn_atan;
     private javax.swing.JButton btn_back;
-    private javax.swing.JButton btn_blank1;
     private javax.swing.JButton btn_blank2;
     private javax.swing.JButton btn_cos;
     private javax.swing.JButton btn_decimal;
@@ -824,6 +885,7 @@ public class CalculatorFrame extends javax.swing.JFrame {
     private javax.swing.JButton btn_e;
     private javax.swing.JButton btn_exponent;
     private javax.swing.JButton btn_factorial;
+    private javax.swing.JButton btn_invert;
     private javax.swing.JButton btn_multiply;
     private javax.swing.JButton btn_pi;
     private javax.swing.JButton btn_sin;
@@ -836,19 +898,19 @@ public class CalculatorFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu5;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem3;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JLabel lblCalcTime;
+    private javax.swing.JMenuItem menuItemAbout;
+    private javax.swing.JMenuItem menuItemHotKeys;
     private javax.swing.JMenuItem menuItemRound_config;
     private javax.swing.JCheckBoxMenuItem menuItemRound_enabled;
     private javax.swing.JRadioButtonMenuItem radioBtn_Font_Bold;
     private javax.swing.JMenu radioBtn_Font_Plain;
     private javax.swing.JRadioButtonMenuItem radioBtn_View_Baisc;
     private javax.swing.JRadioButtonMenuItem radioBtn_View_Extended;
+    private javax.swing.JRadioButton radioDegrees;
+    private javax.swing.JRadioButton radioRadians;
     private javax.swing.JTextField txtCalculation;
     // End of variables declaration//GEN-END:variables
 }
