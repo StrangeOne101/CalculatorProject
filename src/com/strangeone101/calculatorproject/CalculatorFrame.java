@@ -582,7 +582,11 @@ public class CalculatorFrame extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, e.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
             e.printStackTrace();
-        } catch (Exception e) {
+        } catch (IndexOutOfBoundsException e) {
+            JOptionPane.showMessageDialog(this, "Malformed brackets!", "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } 
+        catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, e.getLocalizedMessage(), "Error", JOptionPane.ERROR_MESSAGE);    
         }
@@ -817,7 +821,9 @@ public class CalculatorFrame extends javax.swing.JFrame {
 
     private void btn_invertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_invertActionPerformed
         int index = CalculatorUtil.findDoubleLeft(txtCalculation.getText(), txtCalculation.getText().length());
-        if (index != -1 && index != txtCalculation.getText().length()) {
+        if (index != -1 && index != txtCalculation.getText().length() && !CalculatorUtil.isOperatorLeft(txtCalculation.getText(), txtCalculation.getText().length())) {
+            if (txtCalculation.getText().charAt(index) == ' ') index++;
+            
             double d = Double.parseDouble(txtCalculation.getText().substring(index));
             d *= -1;
             txtCalculation.setText(CalculatorUtil.replaceBetween(txtCalculation.getText(), index, txtCalculation.getText().length(), d + ""));
@@ -831,7 +837,7 @@ public class CalculatorFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_menuItemAboutActionPerformed
 
     private void menuItemHotKeysActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemHotKeysActionPerformed
-        JOptionPane.showMessageDialog(this, "A - About\nK - Hot Keys\nCtrl + P - Plain Font\nCtrl + B - Bold Font\nB - Basic View\nE - Extended View\nT - Calculation Time", "About", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "A - About\nK - Hot Keys\nCtrl + P - Plain Font\nCtrl + B - Bold Font\nB - Basic View\nE - Extended View\nT - Calculation Time\nCtrl + R - Change roundings\nCtrl + Shift + R - Toggle Roundings", "About", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_menuItemHotKeysActionPerformed
 
 

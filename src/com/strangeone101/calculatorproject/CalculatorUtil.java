@@ -178,7 +178,7 @@ public class CalculatorUtil {
             char c = text.charAt(i);
             if (c == ' ') continue;
             //System.out.println("Char index: " + i + " | Char: " + c);
-            return CalculatorFrame.CALC_CHARS.contains(c + ""); //If the next character is an operator, that marks the end of the number we are looking for
+            return (CalculatorFrame.CALC_CHARS + "()").contains(c + ""); //If the next character is an operator, that marks the end of the number we are looking for
         }
         
         return false;
@@ -196,7 +196,7 @@ public class CalculatorUtil {
             char c = text.charAt(i);
             if (c == ' ') continue;
             //System.out.println("Char index: " + i + " | Char: " + c);
-            return CalculatorFrame.CALC_CHARS.contains(c + ""); //If the next character is an operator, that marks the end of the number we are looking for
+            return (CalculatorFrame.CALC_CHARS + "()").contains(c + ""); //If the next character is an operator, that marks the end of the number we are looking for
         }
         
         return false;
